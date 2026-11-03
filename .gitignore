@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.ipynb_checkpoints/
+
+# run artifacts
+models/
+outputs/
+wandb/
+job_logs/
+plots/
+.ruff_cache/

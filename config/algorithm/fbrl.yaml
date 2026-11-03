@@ -1,0 +1,40 @@
+defaults:
+  - features_extractor: rbf
+  - features_extractor@goal_features_extractor: rbf
+  - actor: stochastic
+  - forwardnet: ensemble
+  - backwardnet: default
+  - obs_normalizer: identity
+
+_target_: spectral_alignment.algorithms.fbrl.FBRL
+_recursive_: False
+env: ??? # to be set dynamically
+buffer_size: 1000000
+gamma: 0.95
+tau: 0.005
+z_dim: 100
+orthogonal_loss_coef: 1.0
+z_sampling_goal_ratio: 0.5
+learning_starts: 2000
+batch_size: ${train.batch_size}
+batch_offline_ratio: 0.5
+device: ${train.device}
+z_hold_steps: 10
+update_to_data_ratio: 1
+
+forwardnet_optimizer:
+  _target_: torch.optim.Adam
+  lr: 1e-5
+  weight_decay: 1e-6
+
+backwardnet_optimizer:
+  _target_: torch.optim.Adam
+  lr: 1e-6
+  weight_decay: 1e-6
+
+actor_optimizer:
+  _target_: torch.optim.Adam
+  lr: 1e-6
+  weight_decay: 1e-6
+
+

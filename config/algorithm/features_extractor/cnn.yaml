@@ -1,0 +1,3 @@
+_target_: spectral_alignment.networks.fb_networks.CNNFeaturesExtractor
+output_dim: 128
+input_dim: ???  # to be set dynamically

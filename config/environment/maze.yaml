@@ -1,0 +1,16 @@
+_target_: spectral_alignment.environments.ogbench_env.MazeEnv
+visual: False 
+single_task: False 
+sparse_reward: False
+seed: ${train.seed}
+max_episode_steps: 1000
+render_mode: rgb_array
+action_repeat_count: 1
+action_chunk_count: 1
+
+# --- Dataset specific config ---
+dataset_config:
+  dataset_type: null # null means no dataset will be loaded. Options: "ogbench"
+  dataset_name: null # null means no dataset will be loaded
+  dataset_dir: "~/.ogbench/data"
+  dataset_fraction: 1.0

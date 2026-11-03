@@ -1,0 +1,3 @@
+[submodule "third_party/ogbench"]
+	path = third_party/ogbench
+	url = https://github.com/Erfi/ogbench.git

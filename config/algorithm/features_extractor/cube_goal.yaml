@@ -1,0 +1,9 @@
+# To extract the features for the goal (backwardnet) from the AntMaze dataset.
+# We need to use a different features extractor than the one used for the state (forwardnet). 
+# This is because the goal in AntMaze should not be dependant of the proprioceptive state of the ant.
+defaults:
+  - /algorithm/features_extractor@features_extractor: identity
+
+_target_: spectral_alignment.networks.fb_networks.CubeGoalFeaturesExtractor
+features_extractor:
+  input_dim: 3 # only x, y, and z coordinates of the goal

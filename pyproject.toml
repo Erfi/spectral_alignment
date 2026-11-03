@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spectral_alignment"
+version = "1.0.0"
+description = "Spectral Alignment in Forward-Backward Representations via Temporal Abstraction"
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "numpy",
+    "torch",
+    "hydra-core",
+    "omegaconf",
+    "coloredlogs",
+    "wandb",
+    "gymnasium",
+    "stable-baselines3",
+    "cpprb",
+    "matplotlib>=3.10",
+    "pandas",
+    "tqdm",
+    # local submodule (fork of OGBench with extra tasks/render modes)
+    "ogbench",
+]
+
+[project.optional-dependencies]
+# for the analysis notebooks in notebooks/
+notebooks = [
+    "jupyterlab",
+    "ipywidgets",
+]
+
+[tool.setuptools.packages.find]
+include = ["spectral_alignment*"]
+
+[tool.uv.sources]
+ogbench = { path = "third_party/ogbench", editable = true }

@@ -1,0 +1,2 @@
+_target_: spectral_alignment.utils.common_utils.IdentityNormalizer
+channels_first: False

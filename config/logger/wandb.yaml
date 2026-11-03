@@ -1,0 +1,4 @@
+project: spectral_alignment
+entity: null # your wandb entity (user or team); null uses your default entity
+group: local
+run_id: ???

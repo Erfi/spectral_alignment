@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spectral Alignment in FB Representations</title>
+  <meta name="description" content="Spectral Alignment in Forward–Backward Representations via Temporal Abstraction: project page with an interactive explorer of how action repeat reshapes the successor representation and Q-function.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    // apply the saved theme before first paint; without one the page follows the system setting
+    try {
+      const theme = localStorage.getItem("theme");
+      if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+    } catch (e) {}
+  </script>
+  <script>
+    window.MathJax = { tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Dark mode" aria-pressed="false">
+    <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg>
+  </button>
+  <header class="hero">
+    <h1>Spectral Alignment in Forward–Backward Representations via Temporal Abstraction</h1>
+    <p class="authors">Seyed Mahdi B. Azad, Jasper Hoffmann, Iman Nematollahi, Hao Zhu, Abhinav Valada, Joschka Boedecker</p>
+    <p class="affiliations">Department of Computer Science, University of Freiburg, Germany</p>
+    <p class="affiliations">NeurIPS 2026</p>
+    <nav class="links">
+      <a class="button" href="https://arxiv.org/pdf/2603.20103">Paper</a>
+      <a class="button" href="https://arxiv.org/abs/2603.20103">arXiv</a>
+      <a class="button" href="https://github.com/erfi/spectral_alignment">Code</a>
+    </nav>
+  </header>
+
+  <nav class="toc" aria-label="Sections">
+    <a href="#idea">Idea</a>
+    <a href="#overview">Overview</a>
+    <a href="#explorer"><span class="num">1</span> Effect</a>
+    <a href="#spectrum"><span class="num">2</span> Mechanism</a>
+    <a href="#cite">Cite</a>
+  </nav>
+
+  <main>
+    <section class="tldr card" id="idea">
+      <p class="eyebrow">The idea</p>
+      <p class="tldr-text">
+        <b>TL;DR</b> FB learns the successor representation (SR) through a low-rank bottleneck, but continuous dynamics are
+        high-rank. Repeating actions acts as a <b>low-pass filter</b>: slow, room-scale modes survive, fast ones die out, and the SR
+        becomes low-rank enough for FB to learn it stably.
+      </p>
+      <div class="tldr-strip">
+        <figure>
+          <svg class="tldr-bars" viewBox="0 0 240 110" role="img" aria-label="k = 1: the SR is spread over many modes, and FB's rank-d bottleneck cuts off a large part of it"><rect class="kept" x="0.6" y="14.0" width="6.3" height="82.0" rx="1"/><rect class="kept" x="8.1" y="16.7" width="6.3" height="79.3" rx="1"/><rect class="kept" x="15.6" y="16.8" width="6.3" height="79.2" rx="1"/><rect class="kept" x="23.1" y="18.7" width="6.3" height="77.3" rx="1"/><rect class="kept" x="30.6" y="44.8" width="6.3" height="51.3" rx="1"/><rect class="kept" x="38.1" y="44.8" width="6.3" height="51.3" rx="1"/><rect class="kept" x="45.6" y="45.7" width="6.3" height="50.3" rx="1"/><rect class="kept" x="53.1" y="45.9" width="6.3" height="50.1" rx="1"/><rect class="kept" x="60.6" y="49.7" width="6.3" height="46.3" rx="1"/><rect class="kept" x="68.1" y="50.3" width="6.3" height="45.7" rx="1"/><rect class="cut" x="75.6" y="51.3" width="6.3" height="44.7" rx="1"/><rect class="cut" x="83.1" y="53.9" width="6.3" height="42.1" rx="1"/><rect class="cut" x="90.6" y="60.6" width="6.3" height="35.4" rx="1"/><rect class="cut" x="98.1" y="63.4" width="6.3" height="32.6" rx="1"/><rect class="cut" x="105.6" y="63.9" width="6.3" height="32.1" rx="1"/><rect class="cut" x="113.1" y="67.6" width="6.3" height="28.4" rx="1"/><rect class="cut" x="120.6" y="72.1" width="6.3" height="23.9" rx="1"/><rect class="cut" x="128.1" y="72.4" width="6.3" height="23.6" rx="1"/><rect class="cut" x="135.6" y="72.8" width="6.3" height="23.2" rx="1"/><rect class="cut" x="143.1" y="73.0" width="6.3" height="23.0" rx="1"/><rect class="cut" x="150.6" y="76.4" width="6.3" height="19.6" rx="1"/><rect class="cut" x="158.1" y="76.5" width="6.3" height="19.5" rx="1"/><rect class="cut" x="165.6" y="76.7" width="6.3" height="19.3" rx="1"/><rect class="cut" x="173.1" y="77.0" width="6.3" height="19.0" rx="1"/><rect class="cut" x="180.6" y="77.5" width="6.3" height="18.4" rx="1"/><rect class="cut" x="188.1" y="77.7" width="6.3" height="18.3" rx="1"/><rect class="cut" x="195.6" y="78.9" width="6.3" height="17.1" rx="1"/><rect class="cut" x="203.1" y="78.9" width="6.3" height="17.1" rx="1"/><rect class="cut" x="210.6" y="80.5" width="6.3" height="15.5" rx="1"/><rect class="cut" x="218.1" y="80.6" width="6.3" height="15.4" rx="1"/><rect class="cut" x="225.6" y="81.6" width="6.3" height="14.4" rx="1"/><rect class="cut" x="233.1" y="81.8" width="6.3" height="14.2" rx="1"/><line class="rank" x1="75.0" x2="75.0" y1="4" y2="96"/><text class="rank-label" x="79" y="11">FB rank d</text><line class="base" x1="0" x2="240" y1="96" y2="96"/><text class="axis" x="0" y="108">slow modes</text><text class="axis" x="240" y="108" text-anchor="end">fast modes</text></svg>
+          <figcaption><b>k = 1.</b> The SR is spread over many modes. The bottleneck cuts part of it off.</figcaption>
+        </figure>
+        <div class="tldr-arrow" aria-hidden="true"><span>repeat each action k times</span><span class="math">$\lambda \to \lambda^k$</span><span class="arrow">→</span></div>
+        <figure>
+          <svg class="tldr-bars" viewBox="0 0 240 110" role="img" aria-label="k = 10: a few slow modes carry the SR, and it fits through the bottleneck"><rect class="kept" x="0.6" y="14.0" width="6.3" height="82.0" rx="1"/><rect class="kept" x="8.1" y="34.8" width="6.3" height="61.2" rx="1"/><rect class="kept" x="15.6" y="35.6" width="6.3" height="60.4" rx="1"/><rect class="kept" x="23.1" y="45.3" width="6.3" height="50.7" rx="1"/><rect class="kept" x="30.6" y="85.6" width="6.3" height="10.4" rx="1"/><rect class="kept" x="38.1" y="85.6" width="6.3" height="10.4" rx="1"/><rect class="kept" x="45.6" y="86.1" width="6.3" height="9.9" rx="1"/><rect class="kept" x="53.1" y="86.2" width="6.3" height="9.8" rx="1"/><rect class="kept" x="60.6" y="88.0" width="6.3" height="8.0" rx="1"/><rect class="kept" x="68.1" y="88.2" width="6.3" height="7.8" rx="1"/><rect class="cut" x="75.6" y="88.6" width="6.3" height="7.4" rx="1"/><rect class="cut" x="83.1" y="89.6" width="6.3" height="6.4" rx="1"/><rect class="cut" x="90.6" y="91.7" width="6.3" height="4.3" rx="1"/><rect class="cut" x="98.1" y="92.4" width="6.3" height="3.6" rx="1"/><rect class="cut" x="105.6" y="92.5" width="6.3" height="3.5" rx="1"/><rect class="cut" x="113.1" y="93.3" width="6.3" height="2.7" rx="1"/><rect class="cut" x="120.6" y="94.1" width="6.3" height="1.9" rx="1"/><rect class="cut" x="128.1" y="94.2" width="6.3" height="1.8" rx="1"/><rect class="cut" x="135.6" y="94.3" width="6.3" height="1.7" rx="1"/><rect class="cut" x="143.1" y="94.3" width="6.3" height="1.7" rx="1"/><rect class="cut" x="150.6" y="94.8" width="6.3" height="1.2" rx="1"/><rect class="cut" x="158.1" y="94.9" width="6.3" height="1.1" rx="1"/><rect class="cut" x="165.6" y="94.9" width="6.3" height="1.1" rx="1"/><rect class="cut" x="173.1" y="94.9" width="6.3" height="1.1" rx="1"/><rect class="cut" x="180.6" y="94.9" width="6.3" height="1.1" rx="1"/><rect class="cut" x="188.1" y="95.0" width="6.3" height="1.0" rx="1"/><rect class="cut" x="195.6" y="95.0" width="6.3" height="1.0" rx="1"/><rect class="cut" x="203.1" y="95.0" width="6.3" height="1.0" rx="1"/><rect class="cut" x="210.6" y="95.0" width="6.3" height="1.0" rx="1"/><rect class="cut" x="218.1" y="95.0" width="6.3" height="1.0" rx="1"/><rect class="cut" x="225.6" y="95.0" width="6.3" height="1.0" rx="1"/><rect class="cut" x="233.1" y="95.0" width="6.3" height="1.0" rx="1"/><line class="rank" x1="75.0" x2="75.0" y1="4" y2="96"/><text class="rank-label" x="79" y="11">FB rank d</text><line class="base" x1="0" x2="240" y1="96" y2="96"/><text class="axis" x="0" y="108">slow modes</text><text class="axis" x="240" y="108" text-anchor="end">fast modes</text></svg>
+          <figcaption><b>k = 10.</b> A few slow modes carry the SR. It fits through the bottleneck.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="overview">
+      <p class="eyebrow">Overview</p>
+      <h2>Three ways to a low-rank SR</h2>
+      <figure class="cover">
+        <img src="assets/cover.png" alt="Successor representation and Q-function in the four-rooms environment for the baseline, a low-rank model, a high discount factor and temporal abstraction, discrete (top rows) and learned with forward–backward representations (bottom rows).">
+        <figcaption>
+          Three ways to a low-rank successor representation (SR) and Q-function in four rooms: an explicit low-rank
+          approximation, a higher discount $\gamma$, and temporal abstraction. Rows 1–2 are discrete and computed in closed form;
+          rows 3–4 are learned with forward–backward (FB) representations in the continuous environment.
+        </figcaption>
+      </figure>
+      <details class="abstract">
+        <summary><h2>Abstract</h2></summary>
+      <p>
+        Forward–backward (FB) representations provide a powerful framework for learning the successor representation (SR)
+        in continuous spaces by enforcing a low-rank factorization. However, a fundamental spectral mismatch often exists
+        between the high-rank transition dynamics of continuous environments and the low-rank bottleneck of the FB
+        architecture, making accurate low-rank representation learning difficult. In this work, we analyze temporal
+        abstraction as a mechanism to mitigate this mismatch. By characterizing the spectral properties of the transition
+        operator, we show that temporal abstraction acts analogously to a low-pass filter that suppresses high-frequency
+        spectral components. This suppression reduces the effective rank of the induced SR while preserving a formal bound
+        on the resulting value function error. Empirically, we show that this alignment is a key factor for stable FB
+        learning, particularly at high discount factors where bootstrapping becomes error-prone. Our results identify
+        temporal abstraction as a principled mechanism for shaping the spectral structure of the underlying MDP and
+        enabling effective long-horizon representations in continuous control.
+      </p>
+      </details>
+    </section>
+
+    <section id="explorer" class="card">
+      <p class="eyebrow"><span class="num">1</span> Effect</p>
+      <h2>How temporal abstraction reshapes Q and the SR</h2>
+      <p>
+        Left: the exact solution in the four-rooms grid world. Right: FB learned in the continuous version. Both use
+        $\gamma = 0.95$. Click or drag on a map to move ★.
+      </p>
+
+      <div class="controls">
+        <div class="control">
+          <label for="k-slider">Action repeat <span class="k-value">k = <output id="k-out">1</output></span></label>
+          <input id="k-slider" type="range" min="0" max="4" step="1" value="0" aria-describedby="k-out">
+          <div class="ticks" id="k-ticks-labels" aria-hidden="true"></div>
+        </div>
+        <div class="control">
+          <span class="label" id="quantity-label">Show</span>
+          <div class="segmented" role="radiogroup" aria-labelledby="quantity-label">
+            <button type="button" role="radio" aria-checked="true" data-quantity="q">Q-function</button>
+            <button type="button" role="radio" aria-checked="false" data-quantity="sr">SR</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panels" id="panels">
+        <figure class="panel">
+          <canvas id="disc-canvas" width="480" height="480" aria-label="Discrete four rooms heatmap"></canvas>
+          <figcaption>Exact: grid world, closed form</figcaption>
+        </figure>
+        <figure class="panel">
+          <canvas id="cont-canvas" width="480" height="480" aria-label="Continuous four rooms heatmap, learned FB model"></canvas>
+          <figcaption>Learned FB: continuous four rooms</figcaption>
+        </figure>
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span>low</span><span class="ramp"></span><span>high</span>
+        <span class="legend-note">Each map is scaled to its own range; walls in grey; ★ marks the <span id="marker-role">goal</span>.</span>
+      </div>
+      <p class="status" id="status">Loading data…</p>
+      <p class="hint"><b>Look for:</b> at $k = 1$ the learned Q (right) is patchy and doesn't match the exact one (left).
+        Raise $k$: value spreads over the goal room and through the doorways, and the two maps start to agree.</p>
+
+      <h3>Success rate of the learned agent</h3>
+      <p>Same FB agent; only $k$ changes. Goal-reaching success over 50 episodes, one seed each. Click a bar to jump to that $k$.</p>
+      <div class="bars" id="bars" role="img" aria-label="Success rate for each action repeat k"></div>
+    </section>
+
+    <p class="bridge">Why does repeating actions help? ↓</p>
+
+    <section id="spectrum" class="card">
+      <p class="eyebrow"><span class="num">2</span> Mechanism</p>
+      <h2>Temporal abstraction as a low-pass filter</h2>
+      <p>
+        Repeating an action $k$ times turns $P$ into $P^k$: same eigenvectors, eigenvalues $\lambda \to \lambda^k$.
+        Slow, room-scale modes ($\lambda \approx 1$) survive; fast ones die out. Shown for the four-rooms grid world.
+      </p>
+      <p class="hint"><b>Look for:</b> slide $k$. The grey dots ($k = 1$) spread over many modes; the blue dots collapse onto
+        $\mu = 1$ except a few. Everything right of the FB rank line is what FB can't hold; the readout below shows how much of the SR that is.
+        Hover a dot to see its mode on the grid.</p>
+
+      <div class="controls">
+        <div class="control">
+          <label for="spec-k-slider">Action repeat <span class="k-value">k = <output id="spec-k-out">1</output></span></label>
+          <input id="spec-k-slider" type="range" min="1" max="40" step="1" value="1" aria-describedby="spec-k-out">
+          <div class="ticks" id="spec-k-ticks" aria-hidden="true"></div>
+        </div>
+        <div class="control">
+          <label for="spec-d-slider">FB rank <span class="k-value">d = <output id="spec-d-out">10</output></span></label>
+          <input id="spec-d-slider" type="range" min="2" max="50" step="1" value="10" aria-describedby="spec-d-out">
+          <div class="ticks" aria-hidden="true"><span>2</span><span>50</span></div>
+        </div>
+        <div class="control">
+          <span class="label" id="spec-x-label">View</span>
+          <div class="segmented" id="spec-x-mode" role="radiogroup" aria-labelledby="spec-x-label">
+            <button type="button" role="radio" aria-checked="true" data-value="index">Spectrum</button>
+            <button type="button" role="radio" aria-checked="false" data-value="lambda">Filter curve</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="spectrum-layout">
+        <figure class="spectrum-plot">
+          <svg id="spec-plot" tabindex="0" role="img" aria-label="Eigenvalues of the SR for the current action repeat k; arrow keys step through the eigenvectors"></svg>
+          <figcaption>
+            <span class="key"><span class="dot"></span>$\mu_i(k)$</span>
+            <span class="key"><span class="dot ghost"></span>$k = 1$</span>
+            <span class="readout" id="spec-readout"></span>
+          </figcaption>
+        </figure>
+        <figure class="panel eigvec-panel">
+          <canvas id="spec-vec" width="320" height="320" aria-label="Eigenvector of the selected eigenvalue on the four-rooms grid"></canvas>
+          <figcaption id="spec-vec-caption"></figcaption>
+        </figure>
+      </div>
+
+      <div class="thumbs" id="spec-thumbs"></div>
+      <div class="legend" aria-hidden="true">
+        <span>−</span><span class="ramp diverging"></span><span>+</span>
+        <span class="legend-note">Modes of $P$ on the grid. Faded = filtered out at this $k$.</span>
+      </div>
+      <p class="status" id="spec-status">Loading data…</p>
+    </section>
+
+    <section id="cite">
+      <p class="eyebrow">Cite</p>
+      <h2>Citation</h2>
+      <pre class="bibtex"><code>@inproceedings{azad2026spectral,
+  title     = {Spectral Alignment in Forward-Backward Representations via Temporal Abstraction},
+  author    = {Azad, Seyed Mahdi B and Hoffmann, Jasper and Nematollahi, Iman and
+               Zhu, Hao and Valada, Abhinav and Boedecker, Joschka},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2026},
+}</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>Page source in <code>docs/</code> of the code repository.</p>
+  </footer>
+
+  <script src="assets/heatmaps.js"></script>
+  <script src="assets/explorer.js"></script>
+  <script src="assets/spectrum_data.js"></script>
+  <script src="assets/spectrum.js"></script>
+  <script src="assets/theme.js"></script>
+  <script>
+    // mark the nav link of the section in view
+    (function () {
+      const links = [...document.querySelectorAll(".toc a")];
+      if (!("IntersectionObserver" in window)) return;
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          links.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + e.target.id));
+        });
+      }, { rootMargin: "-45% 0px -50% 0px" });
+      links.forEach((a) => { const t = document.querySelector(a.getAttribute("href")); if (t) io.observe(t); });
+    })();
+  </script>
+</body>
+</html>

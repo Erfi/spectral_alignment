@@ -1,0 +1,5 @@
+_target_: spectral_alignment.networks.fb_networks.StochasticActor
+hidden_dims: [256, 256]
+action_dim: ???
+z_dim: ???
+features_extractor: ??? # to be set dynamically

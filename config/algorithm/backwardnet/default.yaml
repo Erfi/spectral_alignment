@@ -1,0 +1,4 @@
+_target_: spectral_alignment.networks.fb_networks.BackwardNet
+hidden_dims: [256, 256]
+z_dim: ???  # to be set dynamically
+features_extractor: ??? # to be set dynamically

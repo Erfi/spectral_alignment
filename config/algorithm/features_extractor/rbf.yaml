@@ -1,0 +1,6 @@
+_target_: spectral_alignment.networks.fb_networks.RadialBasisXYFeaturesExtractor
+low: -5
+high: 25
+dim: 15
+sigma: 2.0
+input_dim: ??? # to be set dynamically

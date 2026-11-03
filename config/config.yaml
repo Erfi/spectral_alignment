@@ -1,0 +1,12 @@
+defaults:
+  - environment: maze
+  - algorithm: fbrl
+  - logger: wandb
+  - train: default
+  - _self_
+
+saved_models_dir: models
+experiment_name: default                       # e.g. use to distinguish beetwen different experiments
+load_model_path: ???                              # e.g. use to load a pre-trained model
+eval_task_id: null                                # mode=evaluate only: null = random OGBench task per episode, 1-5 = that task only
+mode: ???

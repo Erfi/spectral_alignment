@@ -1,0 +1,2 @@
+_target_: spectral_alignment.networks.fb_networks.IdentityFeaturesExtractor
+input_dim: ??? # to be set dynamically

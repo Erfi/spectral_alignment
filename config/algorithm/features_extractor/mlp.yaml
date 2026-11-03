@@ -1,0 +1,4 @@
+_target_: spectral_alignment.networks.fb_networks.MLPFeaturesExtractor
+hidden_dims: [128, 128]
+output_dim: 128
+input_dim: ??? # to be set dynamically

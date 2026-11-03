@@ -1,0 +1,6 @@
+_target_: spectral_alignment.networks.fb_networks.EnsembleForwardNet
+hidden_dims: [512, 512]
+ensemble_size: 2
+action_dim: ??? # to be set dynamically
+z_dim: ??? # to be set dynamically
+features_extractor: ??? # to be set dynamically
