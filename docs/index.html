@@ -70,14 +70,35 @@
     <section id="overview">
       <p class="eyebrow">Overview</p>
       <h2>Three ways to a low-rank SR</h2>
+      <p class="lead">
+        Three ways to make the SR low-rank: force a low rank, raise $\gamma$, or repeat actions. With exact dynamics
+        <b>all three work</b>. When FB has to <em>learn</em> the SR in continuous space, <b>only temporal abstraction</b> gives a
+        correct, long-horizon Q-function.
+      </p>
       <figure class="cover">
-        <img src="assets/cover.png" alt="Successor representation and Q-function in the four-rooms environment for the baseline, a low-rank model, a high discount factor and temporal abstraction, discrete (top rows) and learned with forward–backward representations (bottom rows).">
+        <div class="cover-grid">
+          <div class="cover-img">
+            <img src="assets/cover.png" alt="Successor representation and Q-function in the four-rooms environment for the baseline, a low-rank model, a high discount factor and temporal abstraction, exact in the grid world (top rows) and learned with forward–backward representations in continuous space (bottom rows).">
+            <span class="cover-focus" aria-hidden="true"></span>
+          </div>
+          <div class="cover-groups" aria-hidden="true">
+            <span class="group"><b>Exact</b> · all three work</span>
+            <span class="group learned"><b>Learned FB</b> · only temp. abs.</span>
+          </div>
+        </div>
         <figcaption>
-          Three ways to a low-rank successor representation (SR) and Q-function in four rooms: an explicit low-rank
-          approximation, a higher discount $\gamma$, and temporal abstraction. Rows 1–2 are discrete and computed in closed form;
-          rows 3–4 are learned with forward–backward (FB) representations in the continuous environment.
+          Top rows: exact, grid world, closed form. Bottom rows: learned with FB in continuous four rooms.
+          ★ = goal (Q) or start state (SR).
         </figcaption>
       </figure>
+      <div class="hint">
+        <b>Look for:</b> the outlined row, the learned Q with the goal at ★.
+        <ul>
+          <li><b>Low-rank:</b> a small bump at ★, then flat and patchy. No value reaches the other rooms.</li>
+          <li><b>High $\gamma$:</b> dark almost everywhere, with false peaks in the far rooms. Nothing points back to ★.</li>
+          <li><b>Temporal abstraction:</b> one smooth slope from ★ out through the doorways.</li>
+        </ul>
+      </div>
       <details class="abstract">
         <summary><h2>Abstract</h2></summary>
       <p>
@@ -138,7 +159,7 @@
         Raise $k$: value spreads over the goal room and through the doorways, and the two maps start to agree.</p>
 
       <h3>Success rate of the learned agent</h3>
-      <p>Same FB agent; only $k$ changes. Goal-reaching success over 50 episodes, one seed each. Click a bar to jump to that $k$.</p>
+      <p>Same FB agent; only $k$ changes. Goal-reaching success over 50 episodes. Click a bar to jump to that $k$.</p>
       <div class="bars" id="bars" role="img" aria-label="Success rate for each action repeat k"></div>
     </section>
 
@@ -201,13 +222,14 @@
     <section id="cite">
       <p class="eyebrow">Cite</p>
       <h2>Citation</h2>
-      <pre class="bibtex"><code>@inproceedings{azad2026spectral,
-  title     = {Spectral Alignment in Forward-Backward Representations via Temporal Abstraction},
-  author    = {Azad, Seyed Mahdi B and Hoffmann, Jasper and Nematollahi, Iman and
-               Zhu, Hao and Valada, Abhinav and Boedecker, Joschka},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2026},
-}</code></pre>
+      <div class="bibtex-wrap">
+        <button type="button" class="copy-btn" id="copy-bibtex" aria-label="Copy BibTeX" title="Copy BibTeX">
+          <svg class="icon-copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+          <svg class="icon-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+          <span class="copy-label" aria-live="polite"></span>
+        </button>
+  <pre class="bibtex"><code>@inproceedings{azad2026spectral,<span class="f">title = {Spectral Alignment in Forward-Backward Representations via Temporal Abstraction},</span><span class="f">author = {Azad, Seyed Mahdi B and Hoffmann, Jasper and Nematollahi, Iman and Zhu, Hao and Valada, Abhinav and Boedecker, Joschka},</span><span class="f">booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},</span><span class="f">year = {2026},</span>}</code></pre>
+      </div>
     </section>
   </main>
 
@@ -220,6 +242,39 @@
   <script src="assets/spectrum_data.js"></script>
   <script src="assets/spectrum.js"></script>
   <script src="assets/theme.js"></script>
+  <script>
+    // copy the BibTeX entry, one indented field per line
+    (function () {
+      const btn = document.getElementById("copy-bibtex");
+      const code = document.querySelector(".bibtex code");
+      if (!btn || !code) return;
+      const text = () => {
+        const fields = [...code.querySelectorAll(".f")].map((f) => "  " + f.textContent.trim());
+        return [code.firstChild.textContent.trim(), ...fields, "}"].join("\n");
+      };
+      const fallback = (t) => {
+        const area = document.createElement("textarea");
+        area.value = t;
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.appendChild(area);
+        area.select();
+        const ok = document.execCommand("copy");
+        area.remove();
+        return ok;
+      };
+      let timer;
+      btn.addEventListener("click", async () => {
+        const t = text();
+        let ok = false;
+        try { await navigator.clipboard.writeText(t); ok = true; } catch (e) { try { ok = fallback(t); } catch (e2) {} }
+        btn.classList.toggle("copied", ok);
+        btn.querySelector(".copy-label").textContent = ok ? "Copied" : "Copy failed";
+        clearTimeout(timer);
+        timer = setTimeout(() => { btn.classList.remove("copied"); btn.querySelector(".copy-label").textContent = ""; }, 1800);
+      });
+    })();
+  </script>
   <script>
     // mark the nav link of the section in view
     (function () {
