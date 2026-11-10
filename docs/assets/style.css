@@ -431,3 +431,38 @@ details.abstract summary h2 { font-size: 1.15rem; }
 .copy-btn.copied .icon-copy { display: none; }
 .copy-btn.copied .icon-check { display: block; }
 .copy-label:empty { display: none; }
+
+/* --- rollout videos --- */
+.rollouts { display: grid; gap: 24px; margin: 20px 0 16px; }
+.rollout-row h3 { margin: 0 0 8px; font-size: 1rem; padding-top: 0; border-top: 0; }
+.rollout-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .rollout-pair { grid-template-columns: 1fr; gap: 12px; } }
+.rollout { position: relative; }
+.rollout video {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  display: block;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: #000;
+  cursor: pointer;
+}
+.rollout.fail video { border-color: var(--series-2); }
+.rollout.success video { border-color: var(--accent); }
+.rollout .tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  pointer-events: none;
+}
+.rollout.fail .tag { background: var(--series-2); }
+.rollout.success .tag { background: var(--accent); }
+:root[data-theme="dark"] .rollout .tag { color: #0b1220; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .rollout .tag { color: #0b1220; } }

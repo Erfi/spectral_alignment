@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/style.css?v=20261110">
   <script>
     // apply the saved theme before first paint; without one the page follows the system setting
     try {
@@ -40,9 +40,10 @@
 
   <nav class="toc" aria-label="Sections">
     <a href="#idea">Idea</a>
+    <a href="#in-action">In action</a>
     <a href="#overview">Overview</a>
-    <a href="#explorer"><span class="num">1</span> Effect</a>
-    <a href="#spectrum"><span class="num">2</span> Mechanism</a>
+    <a href="#explorer">Effect</a>
+    <a href="#spectrum">Mechanism</a>
     <a href="#cite">Cite</a>
   </nav>
 
@@ -67,7 +68,43 @@
       </div>
     </section>
 
-    <section id="overview">
+    <section id="in-action" class="card">
+      <p class="eyebrow">In action</p>
+      <h2>Same start, same goal: with and without action repeat</h2>
+      <p>Same FB agent, trained with and without action repetition. The inset at the top right shows the goal.</p>
+      <div class="rollouts">
+        <div class="rollout-row">
+          <h3>Four rooms</h3>
+          <div class="rollout-pair">
+            <figure class="rollout fail">
+              <span class="tag">k = 1 · fails</span>
+              <video src="assets/videos/rooms/ep2_task10_fail.mp4?v=20261110" poster="assets/videos/rooms/ep2_task10_fail_poster.jpg?v=20261110" muted loop playsinline preload="metadata" aria-label="rooms: without action repeat the agent does not reach the goal"></video>
+            </figure>
+            <figure class="rollout success">
+              <span class="tag">k = 10 · succeeds</span>
+              <video src="assets/videos/rooms/ep2_task10_success.mp4?v=20261110" poster="assets/videos/rooms/ep2_task10_success_poster.jpg?v=20261110" muted loop playsinline preload="metadata" aria-label="rooms: with action repeat 10 the agent reaches the goal"></video>
+            </figure>
+          </div>
+        </div>
+        <div class="rollout-row">
+          <h3>Scene (robot arm)</h3>
+          <div class="rollout-pair">
+            <figure class="rollout fail">
+              <span class="tag">k = 1 · fails</span>
+              <video src="assets/videos/scene/ep1_task4_fail.mp4?v=20261110" poster="assets/videos/scene/ep1_task4_fail_poster.jpg?v=20261110" muted loop playsinline preload="metadata" aria-label="scene: without action repeat the agent does not reach the goal"></video>
+            </figure>
+            <figure class="rollout success">
+              <span class="tag">k = 5 · succeeds</span>
+              <video src="assets/videos/scene/ep1_task4_success.mp4?v=20261110" poster="assets/videos/scene/ep1_task4_success_poster.jpg?v=20261110" muted loop playsinline preload="metadata" aria-label="scene: with action repeat 5 the agent reaches the goal"></video>
+            </figure>
+          </div>
+        </div>
+      </div>
+      <p class="hint"><b>Look for:</b> at $k = 1$ the agent drifts and runs out of time. With action repeat it heads straight for the goal.
+        Click a video to pause it.</p>
+    </section>
+
+    <section id="overview" class="card">
       <p class="eyebrow">Overview</p>
       <h2>Three ways to a low-rank SR</h2>
       <p class="lead">
@@ -78,7 +115,7 @@
       <figure class="cover">
         <div class="cover-grid">
           <div class="cover-img">
-            <img src="assets/cover.png" alt="Successor representation and Q-function in the four-rooms environment for the baseline, a low-rank model, a high discount factor and temporal abstraction, exact in the grid world (top rows) and learned with forward–backward representations in continuous space (bottom rows).">
+            <img src="assets/cover.png?v=20261110" alt="Successor representation and Q-function in the four-rooms environment for the baseline, a low-rank model, a high discount factor and temporal abstraction, exact in the grid world (top rows) and learned with forward–backward representations in continuous space (bottom rows).">
             <span class="cover-focus" aria-hidden="true"></span>
           </div>
           <div class="cover-groups" aria-hidden="true">
@@ -118,7 +155,7 @@
     </section>
 
     <section id="explorer" class="card">
-      <p class="eyebrow"><span class="num">1</span> Effect</p>
+      <p class="eyebrow">Effect</p>
       <h2>How temporal abstraction reshapes Q and the SR</h2>
       <p>
         Left: the exact solution in the four-rooms grid world. Right: FB learned in the continuous version. Both use
@@ -166,7 +203,7 @@
     <p class="bridge">Why does repeating actions help? ↓</p>
 
     <section id="spectrum" class="card">
-      <p class="eyebrow"><span class="num">2</span> Mechanism</p>
+      <p class="eyebrow">Mechanism</p>
       <h2>Temporal abstraction as a low-pass filter</h2>
       <p>
         Repeating an action $k$ times turns $P$ into $P^k$: same eigenvectors, eigenvalues $\lambda \to \lambda^k$.
@@ -237,11 +274,34 @@
     <p>Page source in <code>docs/</code> of the code repository.</p>
   </footer>
 
-  <script src="assets/heatmaps.js"></script>
-  <script src="assets/explorer.js"></script>
-  <script src="assets/spectrum_data.js"></script>
-  <script src="assets/spectrum.js"></script>
-  <script src="assets/theme.js"></script>
+  <script src="assets/heatmaps.js?v=20261110"></script>
+  <script src="assets/explorer.js?v=20261110"></script>
+  <script src="assets/spectrum_data.js?v=20261110"></script>
+  <script src="assets/spectrum.js?v=20261110"></script>
+  <script src="assets/theme.js?v=20261110"></script>
+  <script>
+    // rollout videos: play only while on screen, click to pause or resume, no autoplay for reduced motion
+    (function () {
+      const videos = [...document.querySelectorAll(".rollout video")];
+      const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const paused = new Set();
+      videos.forEach((v) => {
+        v.addEventListener("click", () => {
+          if (v.paused) { paused.delete(v); v.play().catch(() => {}); } else { paused.add(v); v.pause(); }
+        });
+        if (still) paused.add(v);
+      });
+      if (!("IntersectionObserver" in window)) { videos.forEach((v) => { if (!still) v.play().catch(() => {}); }); return; }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          const v = e.target;
+          if (e.isIntersecting && !paused.has(v)) v.play().catch(() => {});
+          else if (!e.isIntersecting) v.pause();
+        });
+      }, { threshold: 0.25 });
+      videos.forEach((v) => io.observe(v));
+    })();
+  </script>
   <script>
     // copy the BibTeX entry, one indented field per line
     (function () {
